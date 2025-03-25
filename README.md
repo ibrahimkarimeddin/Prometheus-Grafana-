@@ -1,9 +1,13 @@
-# Prometheus Installation Guide
+# Monitoring Stack Installation Guide
 
-## Prerequisites
+### Prerequisites
 - A Linux system (these instructions are for Linux, specifically Ubuntu/Debian)
 - `wget` installed
 - `sudo` access
+
+
+  
+##Prometheus Installation Guide
 
 ## Step 1: Create Prometheus User
 Create a system user for Prometheus with no login shell:
@@ -128,7 +132,7 @@ Prometheus should now be running and accessible at `http://localhost:9090`
 
 
 
-# Grafana Installation Guide
+## Grafana Installation Guide
 
 ### Step 1: Prepare System for Grafana Installation
 Update system packages and install required dependencies:
@@ -191,18 +195,139 @@ sudo systemctl start grafana-server
   sudo journalctl -u grafana-server
   ```
 
-## Additional Configuration
-- Configure data sources
-- Create dashboards
-- Set up alerts
 
-## Security Recommendations
-- Change default password immediately
-- Configure authentication methods
-- Use HTTPS for remote access
-- Set up firewall rules to restrict access to port 3000
 
-## Common Next Steps
-1. Connect Grafana to Prometheus as a data source
-2. Import or create monitoring dashboards
-3. Configure additional data sources as needed
+
+
+## Node Exporter Installation Guide
+
+### Step 1: Download Node Exporter
+Download the latest Node Exporter release (v1.5.0):
+
+```bash
+wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
+```
+
+### Step 2: Extract Node Exporter
+Extract the downloaded archive:
+
+```bash
+tar xvf node_exporter-1.5.0.linux-amd64.tar.gz
+```
+
+### Step 3: Install Node Exporter Binary
+Copy the Node Exporter binary to the system bin directory:
+
+```bash
+sudo cp node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+```
+
+### Step 4: Create System User
+Create a system user for Node Exporter:
+
+```bash
+sudo useradd -rs /bin/false node_exporter
+```
+
+### Step 5: Create Systemd Service
+Create a systemd service file for Node Exporter:
+
+```bash
+sudo nano /etc/systemd/system/node_exporter.service
+```
+
+Add the following content:
+
+```ini
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Step 6: Start and Enable Node Exporter
+Enable and start the Node Exporter service:
+
+```bash
+sudo systemctl enable node_exporter
+sudo systemctl start node_exporter
+```
+
+## Configuring Prometheus to Scrape Node Exporter
+
+### Step 7: Update Prometheus Configuration
+Edit the Prometheus configuration file:
+
+```bash
+sudo nano /etc/prometheus/prometheus.yml
+```
+
+Update the configuration to include Node Exporter:
+
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Monitor Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  # Monitor Node Exporter
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+```
+
+### Multiple Target Configuration
+You can add multiple targets by expanding the `static_configs` section:
+
+```yaml
+- job_name: 'node_exporter'
+  static_configs:
+    - targets: ['localhost:9100', '192.168.1.100:9100', '192.168.1.101:9100']
+```
+
+### Step 8: Validate Prometheus Configuration
+Check the configuration file for syntax errors:
+
+```bash
+promtool check config /etc/prometheus/prometheus.yml
+```
+
+### Step 9: Restart Prometheus
+Apply the new configuration:
+
+```bash
+sudo systemctl restart prometheus
+```
+
+## Node Exporter Details
+
+### Port Information
+- Node Exporter runs on port **9100** by default
+
+### Accessing Node Exporter Metrics
+- Local metrics endpoint: `http://localhost:9100/metrics`
+- Remote metrics endpoint: `http://server_ip:9100/metrics`
+
+## Troubleshooting
+- Check Node Exporter service status:
+  ```bash
+  sudo systemctl status node_exporter
+  ```
+- View Node Exporter logs:
+  ```bash
+  sudo journalctl -u node_exporter
+  ```
+
