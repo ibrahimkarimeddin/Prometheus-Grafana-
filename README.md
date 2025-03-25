@@ -331,3 +331,49 @@ sudo systemctl restart prometheus
   sudo journalctl -u node_exporter
   ```
 
+## Monitoring Stack Integration Guide
+
+### Integrating Grafana with Prometheus and Node Exporter
+
+### Step 1: Access Grafana Web Interface
+1. Open your web browser
+2. Navigate to `http://localhost:3000`
+3. Log in with your admin credentials
+
+### Step 2: Add Prometheus as a Data Source
+
+#### Navigate to Data Sources
+1. Click on the gear icon (⚙️) in the left sidebar
+2. Select "Connections"
+3. Click on "Data Sources"
+4. Click "Add new data source"
+
+#### Configure Prometheus Data Source
+1. Select "Prometheus" from the list of available data sources
+2. In the HTTP section, set the URL to: `http://localhost:9090`
+   - This is the default Prometheus server URL
+3. Click "Save & Test"
+   - You should see a green "Successfully queried the Prometheus API" message
+
+### Step 3: Import Pre-built Node Exporter Dashboard
+
+#### Find and Import Dashboard
+1. Go to the "Dashboards" section in the left sidebar
+2. Click "New" and then "Import"
+
+#### Popular Node Exporter Dashboards
+Here are some recommended pre-built dashboards:
+
+1. **Node Exporter Full** (Dashboard ID: 1860)
+   - Comprehensive system metrics dashboard
+   - Detailed view of CPU, memory, disk, and network usage
+
+2. **Node Exporter for Prometheus Dashboard** (Dashboard ID: 11074)
+   - Clean, informative system monitoring dashboard
+
+#### Import Process
+1. Enter the Dashboard ID (e.g., 1860)
+2. Click "Load"
+3. Select Prometheus as the data source
+4. Click "Import"
+
