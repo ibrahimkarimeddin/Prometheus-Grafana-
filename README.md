@@ -124,3 +124,85 @@ Prometheus should now be running and accessible at `http://localhost:9090`
 ## Troubleshooting
 - Check service status: `sudo systemctl status prometheus`
 - View logs: `sudo journalctl -u prometheus`
+
+
+
+
+# Grafana Installation Guide
+
+### Step 1: Prepare System for Grafana Installation
+Update system packages and install required dependencies:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y apt-transport-https software-properties-common wget
+```
+
+### Step 2: Add Grafana GPG Key
+Import the Grafana GPG key for package verification:
+
+```bash
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+```
+
+### Step 3: Add Grafana APT Repository
+Configure the official Grafana repository for the latest stable version:
+
+```bash
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
+```
+
+### Step 4: Install Grafana
+Update package lists and install Grafana:
+
+```bash
+sudo apt-get update
+sudo apt-get install grafana
+```
+
+### Step 5: Start and Enable Grafana Service
+Enable Grafana to start on boot and start the service:
+
+```bash
+sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
+```
+
+## Accessing Grafana
+
+### Default Credentials
+- **Username**: `admin`
+- **Password**: `admin`
+- **Port**: `3000`
+
+**Note**: You will be prompted to change the default password on first login.
+
+### Access Methods
+- Local access: `http://localhost:3000`
+- Remote access: `http://your_server_ip:3000`
+
+## Troubleshooting
+- Check Grafana service status: 
+  ```bash
+  sudo systemctl status grafana-server
+  ```
+- View Grafana logs: 
+  ```bash
+  sudo journalctl -u grafana-server
+  ```
+
+## Additional Configuration
+- Configure data sources
+- Create dashboards
+- Set up alerts
+
+## Security Recommendations
+- Change default password immediately
+- Configure authentication methods
+- Use HTTPS for remote access
+- Set up firewall rules to restrict access to port 3000
+
+## Common Next Steps
+1. Connect Grafana to Prometheus as a data source
+2. Import or create monitoring dashboards
+3. Configure additional data sources as needed
